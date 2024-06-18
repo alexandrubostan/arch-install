@@ -1,1 +1,3 @@
-# Simple install script for Arch Linux
+# arch-install
+
+Simple Arch Linux install script
