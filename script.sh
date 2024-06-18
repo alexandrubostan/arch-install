@@ -62,8 +62,8 @@ HOOKS=(systemd autodetect microcode modconf keyboard sd-vconsole block filesyste
 #HOOKS=(systemd autodetect microcode modconf keyboard sd-vconsole block sd-encrypt filesystems fsck)
 EOF
 
-rm -rf /mnt/efi/EFI/Linux
-mkdir /mnt/efi/EFI/Linux
+mkdir -p /mnt/efi/EFI/Linux
+rm -rf /mnt/efi/EFI/Linux/*
 arch-chroot /mnt mkinitcpio -p linux
 
 systemctl enable NetworkManager --root=/mnt
