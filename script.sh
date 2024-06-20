@@ -61,8 +61,7 @@ default_options="--splash=/usr/share/systemd/bootctl/splash-arch.bmp"
 EOF
 
 tee /mnt/etc/mkinitcpio.conf > /dev/null << EOF
-#MODULES=(i915)
-MODULES=(amdgpu)
+MODULES=()
 
 BINARIES=()
 
