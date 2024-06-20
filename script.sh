@@ -88,3 +88,31 @@ make_efi () {
 
 systemctl enable NetworkManager.service --root=/mnt
 systemctl enable fstrim.timer --root=/mnt
+
+install_plasma () {
+    arch-chroot /mnt pacman -S --needed \
+    plasma-desktop \
+    breeze-gtk \
+    drkonqi \
+    kde-gtk-config \
+    kscreen \
+    ksshaskpass \
+    kwallet-pam \
+    kwrited \
+    kdeplasma-addons \
+    kgamma \
+    plasma-nm \
+    plasma-pa \
+    plasma-systemmonitor \
+    sddm-kcm \
+    xdg-desktop-portal-kde \
+    xdg-desktop-portal-gtk \
+    kitty \
+    dolphin \
+    ark \
+    kate
+
+    systemctl enable sddm.service --root=/mnt
+}
+
+install_plasma
