@@ -25,7 +25,6 @@ normal_fs
 #luks_fs
 
 pacstrap -K /mnt base linux linux-firmware vim sudo \
-efibootmgr \
 networkmanager \
 terminus-font \
 amd-ucode
@@ -44,7 +43,7 @@ arch-chroot /mnt hwclock --systohc
 arch-chroot /mnt locale-gen
 
 mkdir -p /mnt/etc/cmdline.d
-echo 'rw quiet' | tee /mnt/etc/cmdline.d/root.conf > /dev/null
+echo 'rw' | tee /mnt/etc/cmdline.d/root.conf > /dev/null
 
 tee /mnt/etc/mkinitcpio.d/linux.preset > /dev/null << EOF
 # mkinitcpio preset file for the 'linux' package
@@ -57,7 +56,7 @@ PRESETS=('default')
 #default_config="/etc/mkinitcpio.conf"
 #default_image="/boot/initramfs-linux.img"
 default_uki="/efi/EFI/Linux/arch-linux.efi"
-default_options="--splash=/usr/share/systemd/bootctl/splash-arch.bmp"
+default_options=""
 EOF
 
 tee /mnt/etc/mkinitcpio.conf > /dev/null << EOF
@@ -72,6 +71,8 @@ HOOKS=(systemd autodetect microcode modconf keyboard sd-vconsole block filesyste
 EOF
 
 make_efi () {
+    arch-chroot /mnt pacman -S --needed efibootmgr
+
     mkdir -p /mnt/efi/EFI/Linux
     rm -rf /mnt/efi/EFI/Linux/*
     arch-chroot /mnt mkinitcpio -p linux
@@ -83,7 +84,15 @@ make_efi () {
     --unicode
 }
 
+make_systemdboot () {
+    rm -rf /mnt/efi/EFI/Linux
+
+    arch-chroot /mnt bootctl install
+    arch-chroot /mnt mkinitcpio -p linux
+}
+
 #make_efi
+make_systemdboot
 
 systemctl enable NetworkManager.service --root=/mnt
 systemctl enable fstrim.timer --root=/mnt
