@@ -33,14 +33,14 @@ echo '%wheel      ALL=(ALL:ALL) NOPASSWD: ALL' | tee -a /mnt/etc/sudoers > /dev/
 
 sed -i '/en_US.UTF-8 UTF-8/s/^#//' /mnt/etc/locale.gen
 sed -i '/ro_RO.UTF-8 UTF-8/s/^#//' /mnt/etc/locale.gen
-echo 'LANG=en_US.UTF-8' | tee /mnt/etc/locale.conf > /dev/null
-echo 'archbox' | tee /mnt/etc/hostname > /dev/null
-
-echo 'FONT=ter-132b' | tee /mnt/etc/vconsole.conf > /dev/null
 
 arch-chroot /mnt ln -sf /usr/share/zoneinfo/Europe/Bucharest /etc/localtime
 arch-chroot /mnt hwclock --systohc
 arch-chroot /mnt locale-gen
+
+echo 'LANG=en_US.UTF-8' | tee /mnt/etc/locale.conf > /dev/null
+echo 'archbox' | tee /mnt/etc/hostname > /dev/null
+echo 'FONT=ter-132b' | tee /mnt/etc/vconsole.conf > /dev/null
 
 mkdir -p /mnt/etc/cmdline.d
 echo 'rw' | tee /mnt/etc/cmdline.d/root.conf > /dev/null
