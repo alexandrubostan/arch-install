@@ -108,11 +108,9 @@ install_plasma () {
     kwallet-pam \
     kwrited \
     kdeplasma-addons \
-    kgamma \
     plasma-nm \
     plasma-pa \
-    plasma-systemmonitor \
-    sddm-kcm \
+    sddm \
     xdg-desktop-portal-kde \
     xdg-desktop-portal-gtk \
     kitty \
