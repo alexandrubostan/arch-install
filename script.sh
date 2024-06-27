@@ -114,9 +114,7 @@ install_plasma () {
     xdg-desktop-portal-kde \
     xdg-desktop-portal-gtk \
     kitty \
-    dolphin \
-    ark \
-    kate
+    dolphin
 
     systemctl enable sddm.service --root=/mnt
 }
