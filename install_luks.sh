@@ -55,7 +55,7 @@ echo 'ArchLenovo' | tee /mnt/etc/hostname > /dev/null
 echo 'FONT=ter-132b' | tee /mnt/etc/vconsole.conf > /dev/null
 
 ROOTUUID="$(blkid -s UUID -o value "$ROOT")"
-echo "rd.luks.name=$ROOTUUID=cry root=/dev/g/root ipv6.disable=1 systemd.gpt_auto=0" | tee /mnt/etc/kernel/cmdline > /dev/null
+echo "rd.luks.name=$ROOTUUID=cry root=/dev/g/root rootflags=subvol=@ systemd.gpt_auto=0" | tee /mnt/etc/kernel/cmdline > /dev/null
 
 mkdir -p /mnt/efi/EFI/BOOT
 tee /mnt/etc/mkinitcpio.d/linux.preset > /dev/null << EOF
