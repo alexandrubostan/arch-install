@@ -76,7 +76,7 @@ tee /mnt/etc/mkinitcpio.conf > /dev/null << EOF
 MODULES=()
 BINARIES=()
 FILES=()
-HOOKS=(systemd autodetect microcode modconf keyboard sd-vconsole block sd-encrypt lvm2 filesystems fsck)
+HOOKS=(systemd autodetect microcode modconf keyboard sd-vconsole block sd-encrypt lvm2 filesystems)
 EOF
 
 systemctl enable fstrim.timer --root=/mnt
