@@ -32,7 +32,7 @@ ext4fs_luks () {
 
 ext4fs_luks
 
-pacstrap -K /mnt base linux linux-firmware-intel vim sudo intel-ucode lvm2
+pacstrap -K /mnt base linux linux-firmware-intel vim sudo intel-ucode lvm2 terminus-font btrfs-progs
 genfstab -U /mnt >> /mnt/etc/fstab
 
 sed -e '/en_US.UTF-8/s/^#*//' -i /mnt/etc/locale.gen
@@ -51,6 +51,7 @@ tee -a /mnt/etc/hosts > /dev/null << EOF
 EOF
 
 echo 'ArchLenovo' | tee /mnt/etc/hostname > /dev/null
+echo 'FONT=ter-132b' | tee /mnt/etc/vconsole.conf > /dev/null
 
 ROOTUUID="$(blkid -s UUID -o value "$ROOT")"
 echo "rd.luks.name=$ROOTUUID=root root=/dev/g/root ipv6.disable=1 systemd.gpt_auto=0" | tee /mnt/etc/kernel/cmdline > /dev/null
