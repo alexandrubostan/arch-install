@@ -27,6 +27,8 @@ ext4fs_luks () {
   mount --mkdir "$EFI" /mnt/efi
   mkswap /dev/g/swap
   #mount --mkdir "$BOOT" /mnt/boot
+
+  swapon /dev/g/swap
 }
 
 ext4fs_luks
