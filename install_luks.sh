@@ -8,13 +8,12 @@ ROOT='/dev/nvme0n1p5'
 
 ext4fs_luks () {
   cryptsetup luksFormat "$ROOT"
-  cryptsetup --allow-discards --perf-no_read_workqueue --perf-no_write_workqueue --persistent open "$ROOT" root
+  cryptsetup --allow-discards --perf-no_read_workqueue --perf-no_write_workqueue --persistent open "$ROOT" cry
   
-  pvcreate /dev/mapper/root
-  vgcreate g /dev/mapper/root
+  pvcreate /dev/mapper/cry
+  vgcreate g /dev/mapper/cry
   lvcreate -L 16G -n swap g
   lvcreate -l 100%FREE -n root g
-  lvreduce -L -256M g/root
   
   mkfs.btrfs /dev/g/root --force
   mount /dev/g/root /mnt
@@ -54,7 +53,7 @@ echo 'ArchLenovo' | tee /mnt/etc/hostname > /dev/null
 echo 'FONT=ter-132b' | tee /mnt/etc/vconsole.conf > /dev/null
 
 ROOTUUID="$(blkid -s UUID -o value "$ROOT")"
-echo "rd.luks.name=$ROOTUUID=root root=/dev/g/root ipv6.disable=1 systemd.gpt_auto=0" | tee /mnt/etc/kernel/cmdline > /dev/null
+echo "rd.luks.name=$ROOTUUID=cry root=/dev/g/root ipv6.disable=1 systemd.gpt_auto=0" | tee /mnt/etc/kernel/cmdline > /dev/null
 
 mkdir -p /mnt/efi/EFI/BOOT
 tee /mnt/etc/mkinitcpio.d/linux.preset > /dev/null << EOF
