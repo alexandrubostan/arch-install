@@ -1,20 +1,16 @@
 #!/bin/bash
-
 set -eo pipefail
 
 EFI='/dev/nvme0n1p1'
-#BOOT='/dev/nvme0n1p4'
 ROOT='/dev/nvme0n1p5'
 
 ext4fs_luks () {
   cryptsetup luksFormat "$ROOT"
-  cryptsetup --allow-discards --perf-no_read_workqueue --perf-no_write_workqueue --persistent open "$ROOT" cry
-  
+  cryptsetup --allow-discards --perf-no_read_workqueue --perf-no_write_workqueue --persistent open "$ROOT" cry 
   pvcreate /dev/mapper/cry
   vgcreate g /dev/mapper/cry
   lvcreate -L 16G -n swap g
   lvcreate -l 100%FREE -n root g
-  
   mkfs.btrfs /dev/g/root --force
   mount /dev/g/root /mnt
   btrfs subvolume create /mnt/@
@@ -23,14 +19,10 @@ ext4fs_luks () {
   mount -o compress-force=zstd:2,noatime,subvol=@ /dev/g/root /mnt
   mkdir -p /mnt/home
   mount -o compress-force=zstd:2,noatime,subvol=@home /dev/g/root /mnt/home
-  
   mount --mkdir "$EFI" /mnt/efi
   mkswap /dev/g/swap
-  #mount --mkdir "$BOOT" /mnt/boot
-
   swapon /dev/g/swap
 }
-
 ext4fs_luks
 
 pacstrap -K /mnt base linux linux-firmware-intel vim sudo intel-ucode lvm2 terminus-font btrfs-progs
@@ -51,11 +43,11 @@ tee -a /mnt/etc/hosts > /dev/null << EOF
 ::1              localhost ip6-localhost ip6-loopback
 EOF
 
-echo 'ArchLenovo' | tee /mnt/etc/hostname > /dev/null
+echo 'archie' | tee /mnt/etc/hostname > /dev/null
 echo 'FONT=ter-132b' | tee /mnt/etc/vconsole.conf > /dev/null
 
 ROOTUUID="$(blkid -s UUID -o value "$ROOT")"
-echo "rd.luks.name=$ROOTUUID=cry root=/dev/g/root rootflags=subvol=@ systemd.gpt_auto=0" | tee /mnt/etc/kernel/cmdline > /dev/null
+echo "rd.luks.name=$ROOTUUID=cry root=/dev/g/root rootflags=subvol=@" | tee /mnt/etc/kernel/cmdline > /dev/null
 
 mkdir -p /mnt/efi/EFI/BOOT
 tee /mnt/etc/mkinitcpio.d/linux.preset > /dev/null << EOF
