@@ -6,26 +6,23 @@ ROOT='/dev/nvme0n1p5'
 
 ext4fs_luks () {
   cryptsetup luksFormat "$ROOT"
-  cryptsetup --allow-discards --perf-no_read_workqueue --perf-no_write_workqueue --persistent open "$ROOT" cry 
-  pvcreate /dev/mapper/cry
-  vgcreate g /dev/mapper/cry
-  lvcreate -L 16G -n swap g
-  lvcreate -l 100%FREE -n root g
-  mkfs.btrfs /dev/g/root --force
-  mount /dev/g/root /mnt
+  cryptsetup --allow-discards --perf-no_read_workqueue --perf-no_write_workqueue --persistent open "$ROOT" cry
+  mkfs.btrfs /dev/mapper/cry --force
+  mount /dev/mapper/cry /mnt
   btrfs subvolume create /mnt/@
   btrfs subvolume create /mnt/@home
   umount /mnt
-  mount -o compress-force=zstd:2,noatime,subvol=@ /dev/g/root /mnt
+  mount -o compress-force=zstd:2,noatime,subvol=@ /dev/mapper/cry /mnt
   mkdir -p /mnt/home
-  mount -o compress-force=zstd:2,noatime,subvol=@home /dev/g/root /mnt/home
+  mount -o compress-force=zstd:2,noatime,subvol=@home /dev/mapper/cry /mnt/home
   mount --mkdir "$EFI" /mnt/efi
-  mkswap /dev/g/swap
-  swapon /dev/g/swap
+  btrfs subvolume create /mnt/swap
+  btrfs filesystem mkswapfile --size 16g --uuid clear /mnt/swap/swapfile
+  swapon /mnt/swap/swapfile
 }
 ext4fs_luks
 
-pacstrap -K /mnt base linux linux-firmware-intel vim sudo intel-ucode lvm2 terminus-font btrfs-progs
+pacstrap -K /mnt base linux linux-firmware-intel vim sudo intel-ucode terminus-font btrfs-progs
 genfstab -U /mnt >> /mnt/etc/fstab
 
 sed -e '/en_US.UTF-8/s/^#*//' -i /mnt/etc/locale.gen
@@ -47,7 +44,7 @@ echo 'archie' | tee /mnt/etc/hostname > /dev/null
 echo 'FONT=ter-132b' | tee /mnt/etc/vconsole.conf > /dev/null
 
 ROOTUUID="$(blkid -s UUID -o value "$ROOT")"
-echo "rd.luks.name=$ROOTUUID=cry root=/dev/g/root rootflags=subvol=@" | tee /mnt/etc/kernel/cmdline > /dev/null
+echo "rd.luks.name=$ROOTUUID=cry root=/dev/mapper/cry rootflags=subvol=@" | tee /mnt/etc/kernel/cmdline > /dev/null
 
 mkdir -p /mnt/efi/EFI/BOOT
 tee /mnt/etc/mkinitcpio.d/linux.preset > /dev/null << EOF
@@ -68,7 +65,7 @@ tee /mnt/etc/mkinitcpio.conf > /dev/null << EOF
 MODULES=()
 BINARIES=()
 FILES=()
-HOOKS=(systemd autodetect microcode modconf keyboard sd-vconsole block sd-encrypt lvm2 filesystems)
+HOOKS=(systemd autodetect microcode modconf keyboard sd-vconsole block sd-encrypt filesystems)
 EOF
 
 systemctl enable fstrim.timer --root=/mnt
