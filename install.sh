@@ -32,6 +32,10 @@ echo 'archie' | tee /mnt/etc/hostname > /dev/null
 systemctl enable fstrim.timer --root=/mnt
 systemctl enable NetworkManager.service --root=/mnt
 
+arch-chroot /mnt bootctl install
+#arch-chroot /mnt bootctl --esp-path=/efi --boot-path=/boot install
+efibootmgr -c -d "$EFI" -l '\EFI\SYSTEMD\SYSTEMD-BOOTX64.EFI' -u
+
 arch-chroot /mnt passwd
 arch-chroot /mnt useradd -m -G wheel alexb
 arch-chroot /mnt passwd alexb
