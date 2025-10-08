@@ -7,7 +7,8 @@ EFI='/dev/nvme0n1p1'
 ROOT='/dev/nvme0n1p5'
 
 ext4fs () {
-  mkfs.ext4 -O fast_commit "$ROOT"
+  mkfs.ext4 "$ROOT"
+  tune2fs -O fast_commit "$ROOT"
   mount "$ROOT" /mnt
   mount --mkdir "$EFI" /mnt/efi
   #mount --mkdir "$BOOT" /mnt/boot
