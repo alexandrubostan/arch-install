@@ -7,10 +7,10 @@ ROOT='/dev/nvme0n1p5'
 
 ext4fs_luks () {
   cryptsetup luksFormat "$ROOT"
-  cryptsetup --allow-discards --perf-no_read_workqueue --perf-no_write_workqueue --persistent open "$ROOT" cry
-  mkfs.ext4 /dev/mapper/cry
-  tune2fs -O fast_commit /dev/mapper/cry
-  mount /dev/mapper/cry /mnt
+  cryptsetup --allow-discards --perf-no_read_workqueue --perf-no_write_workqueue --persistent open "$ROOT" root
+  mkfs.ext4 /dev/mapper/root
+  tune2fs -O fast_commit /dev/mapper/root
+  mount /dev/mapper/root /mnt
   mount --mkdir "$EFI" /mnt/efi
   #mount --mkdir "$BOOT" /mnt/boot
 }
@@ -29,9 +29,7 @@ echo 'LANG=en_US.UTF-8' | tee /mnt/etc/locale.conf > /dev/null
 echo 'LC_TIME=ro_RO.UTF-8' | tee -a /mnt/etc/locale.conf > /dev/null
 echo '/dev/gpt-auto-root  /  ext4  rw,noatime  0  1' | tee -a /mnt/etc/fstab > /dev/null
 echo 'archie' | tee /mnt/etc/hostname > /dev/null
-
-ROOTUUID="$(blkid -s UUID -o value "$ROOT")"
-echo "rw rd.luks.name=$ROOTUUID=cry root=/dev/mapper/cry" | tee /mnt/etc/kernel/cmdline > /dev/null
+echo 'rw' | tee /mnt/etc/kernel/cmdline > /dev/null
 
 tee /mnt/etc/mkinitcpio.d/linux.preset > /dev/null << EOF
 # mkinitcpio preset file for the 'linux' package
